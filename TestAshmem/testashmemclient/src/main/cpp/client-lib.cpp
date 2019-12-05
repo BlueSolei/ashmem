@@ -4,20 +4,24 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <zconf.h>
 
-
+#include "AndroidLog.h"
 
 int *map ;
 int size;
 
 static void setmap(JNIEnv *env, jclass cl, jint fd, jint sz)
 {
-    size = sz;
+  LOGD("Shaul.ClientLib Process %d call %s()", getpid(), __func__);
+
+  size = sz;
     map = (int *)mmap(0,size,PROT_READ|PROT_WRITE,MAP_SHARED,fd,0);
 }
 
 static jint setNum(JNIEnv *env, jclass cl, jint pos,jint num)
 {
+  LOGD("Shaul.ClientLib Process %d call %s()", getpid(), __func__);
             if(pos < (size/ sizeof(int)))
             {
                 map[pos] = num;
@@ -27,9 +31,10 @@ static jint setNum(JNIEnv *env, jclass cl, jint pos,jint num)
 }
 static jint getNum(JNIEnv *env, jclass cl, jint pos)
 {
+  LOGD("Shaul.ClientLib Process %d call %s()", getpid(), __func__);
             if(pos < (size/ sizeof(int)))
             {
-                return map[pos];
+                return map[pos] -1;
             }
             return -1;
 }

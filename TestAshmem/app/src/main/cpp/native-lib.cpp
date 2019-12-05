@@ -4,7 +4,9 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <zconf.h>
 
+#include "AndroidLog.h"
 
 #define ASHMEM_NAME_LEN         256
 #define __ASHMEMIOC             0x77
@@ -23,6 +25,7 @@ int num = 0;
 
 static jint getFD(JNIEnv *env, jclass cl, jstring path,jint size)
 {
+    LOGD("Shaul.NativeLib Process %d call %s()", getpid(), __func__);
     const char *name = env->GetStringUTFChars(path,NULL);
 
     jint fd = open("/dev/ashmem",O_RDWR);
@@ -43,13 +46,14 @@ static jint getFD(JNIEnv *env, jclass cl, jstring path,jint size)
 
 static jint setNum(JNIEnv *env, jclass cl,jint fd, jint pos,jint num)
 {
+    LOGD("Shaul.NativeLib Process %d call %s()", getpid(), __func__);
     for(int i = 0; i < num; i++)
     {
         if(maps[i].fd == fd)
         {
             if(pos < (maps[i].size/ sizeof(int)))
             {
-                maps[i].map[pos] = num;
+                maps[i].map[pos] = num + 1;
                 return 0;
             }
             return -1;
@@ -59,6 +63,7 @@ static jint setNum(JNIEnv *env, jclass cl,jint fd, jint pos,jint num)
 }
 static jint getNum(JNIEnv *env, jclass cl,jint fd, jint pos)
 {
+    LOGD("Shaul.NativeLib Process %d call %s()", getpid(), __func__);
     for(int i = 0; i < num; i++)
     {
         if(maps[i].fd == fd)
